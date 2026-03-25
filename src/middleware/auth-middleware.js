@@ -13,7 +13,7 @@ const authMiddleware = async (req, res, next) => {
 
     const isBlacklisted = await BlacklistedToken.findOne({ token });
     if (isBlacklisted) {
-      return next(new AppError("Token has been revoked", 401));
+      return next(new AppError("Token is invalid", 401));
     }
 
     const decoded = jwt.verify(token, config.JWT_SECRET);
