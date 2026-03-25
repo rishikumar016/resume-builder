@@ -130,3 +130,17 @@ export const logoutUser = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "-password -refreshToken",
+    );
+    if (!user) {
+      return next(new AppError("User not found", 404));
+    }
+    return res.status(200).json({ user });
+  } catch (error) {
+    return next(error);
+  }
+};

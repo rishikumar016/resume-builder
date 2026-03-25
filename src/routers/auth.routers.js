@@ -4,8 +4,9 @@ import {
   loginUser,
   logoutUser,
   refreshToken,
+  getUser,
 } from "../controllers/auth-controles.js";
-import userAuth from "../middleware/auth.js";
+import authMiddleware from "../middleware/auth-middleware.js";
 
 const authRouters = express.Router();
 
@@ -19,8 +20,10 @@ authRouters.post("/register", registerUser);
 
 authRouters.post("/login", loginUser);
 
-authRouters.get("/logout", userAuth, logoutUser);
+authRouters.get("/logout", authMiddleware, logoutUser);
 
 authRouters.get("/refresh-token", refreshToken);
+
+authRouters.get("/get-user", authMiddleware, getUser);
 
 export default authRouters;

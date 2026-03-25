@@ -4,7 +4,7 @@ import BlacklistedToken from "../models/blacklist.model.js";
 import jwt from "jsonwebtoken";
 import { AppError } from "./error.js";
 
-const userAuth = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
@@ -17,12 +17,7 @@ const userAuth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, config.JWT_SECRET);
-    const user = await User.findById(decoded._id);
-    if (!user) {
-      return next(new AppError("Authentication required", 401));
-    }
-
-    req.user = user;
+    req.user = decoded;
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
@@ -35,4 +30,4 @@ const userAuth = async (req, res, next) => {
   }
 };
 
-export default userAuth;
+export default authMiddleware;
