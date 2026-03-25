@@ -1,26 +1,47 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import config from "../config.js";
+import config from "./../config/config.js";
+import validator from "validator";
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: [true, "Username already exists"],
-    required: true,
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      minlength: 2,
+      maxlength: 30,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: [true, "Email already exists"],
+      lowercase: true,
+      trim: true,
+      validate: {
+        validator: validator.isEmail,
+        message: "Invalid email address",
+      },
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      select: false,
+      validate: {
+        validator: validator.isStrongPassword,
+        message: "Enter a strong password",
+      },
+    },
+    refreshToken: {
+      type: String,
+      select: false,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: [true, "Email already exists"],
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true },
+);
 
-UserSchema.pre("save", async function () {
+userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }
@@ -28,21 +49,19 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-UserSchema.methods.getAccessToken = function () {
+userSchema.methods.getAccessToken = function () {
   return jwt.sign({ _id: this._id }, config.JWT_SECRET, {
     expiresIn: "15m",
   });
 };
 
-UserSchema.methods.getRefreshToken = function () {
-  return jwt.sign(
-    { _id: this._id, tokenVersion: this.tokenVersion },
-    config.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" },
-  );
+userSchema.methods.getRefreshToken = function () {
+  return jwt.sign({ _id: this._id }, config.REFRESH_TOKEN_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
-UserSchema.methods.validatePassword = function (inputPassword) {
+userSchema.methods.validatePassword = function (inputPassword) {
   return bcrypt.compare(inputPassword, this.password);
 };
 

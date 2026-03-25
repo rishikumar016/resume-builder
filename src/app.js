@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import authRouters from "./routes/auth.routes.js";
+import authRouters from "./routers/auth.routers.js";
 import { AppError, errorHandler } from "./middleware/error.js";
 const app = express();
 
