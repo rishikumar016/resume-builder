@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import authRouters from "./routers/auth.routers.js";
@@ -6,6 +7,12 @@ import { AppError, errorHandler } from "./middleware/error.js";
 const app = express();
 
 // Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
