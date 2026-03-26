@@ -6,17 +6,18 @@ import config from "../config/config.js";
 import { AppError } from "../middleware/error.js";
 
 export const registerUser = async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
   try {
     const isAlreadyExist = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ email }],
     });
     if (isAlreadyExist) {
-      return next(new AppError("Username or Email already exists", 400));
+      return next(new AppError("Email already exists", 400));
     }
 
     const newUser = new User({
-      username,
+      firstName,
+      lastName,
       email,
       password,
     });

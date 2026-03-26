@@ -6,13 +6,20 @@ import validator from "validator";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    firstName: {
       type: String,
-      required: [true, "Username is required"],
-      unique: true,
+      required: true,
       minlength: 2,
       maxlength: 30,
     },
+
+    lastName: {
+      type: String,
+      required: true,
+      minlength: 2,
+      maxlength: 30,
+    },
+
     email: {
       type: String,
       required: [true, "Email is required"],
