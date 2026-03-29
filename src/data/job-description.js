@@ -1,0 +1,68 @@
+export const jobDescription = {
+  role_summary:
+    "We are seeking an experienced Full Stack Developer with strong expertise in React and FastAPI, supported by Asencio, Redis, MongoDB, and advanced security frameworks. The role involves building scalable web applications, designing secure backend services, and ensuring high-performance data flows across distributed systems.",
+  experience_required: "3-5 Years",
+  notice_period: "Immediate to 30 days",
+  location: "Pan India",
+  employment_details: {
+    employment_type: "Full Time, Permanent",
+    industry_type: "Management Consulting",
+    department: "Other",
+    role_category: "Other",
+  },
+  education: {
+    undergraduate: "Any Graduate, B.Tech/B.E. in Any Specialization",
+  },
+  key_responsibilities: {
+    frontend: [
+      "Develop responsive, high-quality UIs using React, TypeScript, Hooks, and component-based architecture",
+      "Integrate REST/GraphQL APIs",
+      "Optimize frontend performance, state management, and rendering",
+    ],
+    backend: [
+      "Build scalable REST APIs and asynchronous backend services using FastAPI",
+      "Implement microservices and async workflows using Asencio",
+      "Ensure API documentation, versioning, and testing",
+    ],
+    data_caching: [
+      "Design and manage MongoDB schemas, queries, and aggregations",
+      "Use Redis for caching, pub/sub, session management, and performance optimization",
+    ],
+    security_authentication: [
+      "Implement OAuth 2.0 and JWT-based authentication",
+      "Manage token lifecycle",
+      "Enforce RBAC and access control policies",
+      "Apply cryptographic techniques for hashing, encryption, and signing",
+      "Ensure secure coding standards and threat mitigation",
+    ],
+    devops_quality: [
+      "Work with CI/CD pipelines and Docker",
+      "Deploy on cloud platforms (AWS, Azure, GCP)",
+      "Write unit and integration tests",
+      "Monitor performance and resolve bottlenecks",
+      "Ensure production reliability",
+    ],
+  },
+  required_skills: [
+    "React",
+    "JavaScript",
+    "TypeScript",
+    "FastAPI",
+    "Python async programming",
+    "API design",
+    "Asencio",
+    "Redis",
+    "MongoDB",
+    "OAuth 2.0",
+    "JWT",
+    "RBAC",
+    "Cryptography fundamentals",
+    "Docker",
+    "Git",
+    "CI/CD pipelines",
+    "Cloud deployments",
+    "Debugging",
+    "System design",
+    "Problem-solving",
+  ],
+};
