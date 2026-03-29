@@ -17,8 +17,6 @@ const generateInterviewReportController = async (req, res) => {
       jobDescription,
     });
 
-    console.log("AI Report:", AIreport);
-
     const interviewReport = await InterviewReportModel.create({
       user: req.user._id,
       resume: resumeContent.text,
