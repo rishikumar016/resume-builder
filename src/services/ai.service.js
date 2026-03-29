@@ -1,6 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+
+function cleanSchema(schema) {
+  if (Array.isArray(schema)) return schema.map(cleanSchema);
+  if (schema && typeof schema === "object") {
+    const { $schema, additionalProperties, ...rest } = schema;
+    return Object.fromEntries(
+      Object.entries(rest).map(([k, v]) => [k, cleanSchema(v)]),
+    );
+  }
+  return schema;
+}
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(
@@ -72,7 +82,10 @@ const interviewReportSchema = z.object({
     .array(
       z.object({
         day: z.number().describe("The day number in the preparation plan"),
-        tasks: z.array(
+        focusAreas: z
+          .string()
+          .describe("The main focus area for this day of the preparation plan"),
+        task: z.array(
           z.string().describe("The tasks to be completed on this day"),
         ),
       }),
@@ -82,26 +95,26 @@ const interviewReportSchema = z.object({
     ),
 });
 
-const generateInterviewReport = async (
+const generateInterviewReport = async ({
   resume,
-  candidateProfile,
+  selfDescription,
   jobDescription,
-) => {
+}) => {
   const prompt = `Generate an interview report for a candidate based on the following job description and candidate profile. The report should include a match score between 0 and 100, a list of technical questions with their intentions and answers, a list of behavioral questions with their intentions and answers, a list of skill gaps with their severity, and a day-wise preparation plan for the candidate to follow. 
-    Resume Content: ${JSON.stringify(resume)}      
-    Job Description: ${JSON.stringify(jobDescription)}
-    Candidate Profile: ${JSON.stringify(candidateProfile)}`;
+    Resume Content: ${resume}      
+    Job Description: ${jobDescription}
+    Candidate Profile: ${selfDescription}`;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
-      responseSchema: zodToJsonSchema(interviewReportSchema),
+      responseSchema: cleanSchema(z.toJSONSchema(interviewReportSchema)),
     },
   });
 
-  console.log("AI Response:", JSON.parse(response.text));
+  return JSON.parse(response.text);
 };
 
 export default generateInterviewReport;
