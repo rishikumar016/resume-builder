@@ -1,5 +1,4 @@
 import { Resume } from "../models/resume.model.js";
-import { PDFParse } from "pdf-parse";
 import { parseResumeToSchema } from "../services/ai.service.js";
 import { generatePdfFromUrl } from "../services/pdf.service.js";
 
