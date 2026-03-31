@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import authRouters from "./routers/auth.routes.js";
 import interviewRouter from "./routers/interview.routes.js";
+import resumeRouter from "./routers/resume.router.js";
 import { AppError, errorHandler } from "./middleware/error.js";
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRouters);
 app.use("/api/interview", interviewRouter);
+app.use("/api/resumes", resumeRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.originalUrl} not found`, 404));

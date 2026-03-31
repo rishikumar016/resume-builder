@@ -1,4 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
+import { z } from "zod";
 import { z } from "zod";
 
 function cleanSchema(schema) {
@@ -111,6 +112,89 @@ const generateInterviewReport = async ({
     config: {
       responseMimeType: "application/json",
       responseSchema: cleanSchema(z.toJSONSchema(interviewReportSchema)),
+    },
+  });
+
+  return JSON.parse(response.text);
+};
+
+const resumeParserSchema = {
+  type: Type.OBJECT,
+  properties: {
+    title: { type: Type.STRING },
+    basics: {
+      type: Type.OBJECT,
+      properties: {
+        name: { type: Type.STRING },
+        label: { type: Type.STRING },
+        email: { type: Type.STRING },
+        phone: { type: Type.STRING },
+        url: { type: Type.STRING },
+        summary: { type: Type.STRING },
+      },
+      required: ["name"],
+    },
+    work: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          position: { type: Type.STRING },
+          startDate: { type: Type.STRING },
+          endDate: { type: Type.STRING },
+          summary: { type: Type.STRING },
+          highlights: { type: Type.ARRAY, items: { type: Type.STRING } },
+        },
+        required: ["name", "position"],
+      },
+    },
+    education: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          institution: { type: Type.STRING },
+          area: { type: Type.STRING },
+          studyType: { type: Type.STRING },
+          startDate: { type: Type.STRING },
+          endDate: { type: Type.STRING },
+          score: { type: Type.STRING },
+        },
+        required: ["institution"],
+      },
+    },
+    skills: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          level: { type: Type.STRING },
+        },
+        required: ["name"],
+      },
+    },
+  },
+};
+
+export const parseResumeToSchema = async (rawText) => {
+  const prompt = `
+You are an expert HR Data Extraction tool. 
+Map the following scraped resume text EXACTLY to the JSON schema.
+Extract all work history, education, skills, and basic details.
+If a field is missing in the text, omit it.
+Do NOT hallucinate information.
+--- TEXT ---
+${rawText}
+`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.1-pro",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: resumeParserSchema,
     },
   });
 
