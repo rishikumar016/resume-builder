@@ -1,5 +1,5 @@
 import { Resume } from "../models/resume.model.js";
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 import { parseResumeToSchema } from "../services/ai.service.js";
 import { generatePdfFromUrl } from "../services/pdf.service.js";
 
@@ -164,13 +164,11 @@ export const importResumeFromPdf = async (req, res) => {
 
     res.status(200).json({ success: true, data: extractedData });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error importing resume",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error importing resume",
+      error: error.message,
+    });
   }
 };
 
@@ -191,8 +189,11 @@ export const exportResumePdf = async (req, res) => {
     }
 
     const frontendUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    // Get token from header or cookie to pass to Puppeteer
+    const token =
+      req.headers.authorization?.split(" ")[1] || req.cookies?.token || "";
     // We assume the frontend has a print layout at this path
-    const printUrl = `${frontendUrl}/resume/${req.params.id}/print`;
+    const printUrl = `${frontendUrl}/resume/${req.params.id}/print?token=${token}`;
 
     const pdfBuffer = await generatePdfFromUrl(printUrl);
 
@@ -204,12 +205,10 @@ export const exportResumePdf = async (req, res) => {
 
     res.status(200).send(pdfBuffer);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error generating PDF",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error generating PDF",
+      error: error.message,
+    });
   }
 };
