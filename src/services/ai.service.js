@@ -1,17 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
-function cleanSchema(schema) {
-  if (Array.isArray(schema)) return schema.map(cleanSchema);
-  if (schema && typeof schema === "object") {
-    const { $schema, additionalProperties, ...rest } = schema;
-    return Object.fromEntries(
-      Object.entries(rest).map(([k, v]) => [k, cleanSchema(v)]),
-    );
-  }
-  return schema;
-}
-
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(
     "GEMINI_API_KEY is not defined in the environment variables.",
@@ -110,11 +99,12 @@ const generateInterviewReport = async ({
     contents: prompt,
     config: {
       responseMimeType: "application/json",
-      responseSchema: cleanSchema(z.toJSONSchema(interviewReportSchema)),
+      responseJsonSchema: z.toJSONSchema(interviewReportSchema),
     },
   });
 
-  return JSON.parse(response.text);
+  const report = interviewReportSchema.parse(JSON.parse(response.text));
+  return report;
 };
 
 export default generateInterviewReport;
